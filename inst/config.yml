@@ -1,0 +1,53 @@
+default:
+  window.size: 20
+  adj.period: 14
+  not.predict: False
+  rt.func.num: 1
+  num.iter: 200
+  silence.errors: False
+  predict.beyond: 0    # Should be set to 0 unless predicting an ongoing wave
+
+  params_limits: [[True,    NA,   NA],
+                  [False,   NA,   NA],
+                  [True,    0.001,    50],
+                  [True,    NA,   NA],
+                  [True,    0,  1],
+                   # For vt_params
+                  [True,    0,   1.7],
+                  [True,    0,   1.5],
+                  [True,    NA,   NA],
+                  [True,    NA,   NA],
+                   # This is the psi param
+                  [False,    0,   1],     # psi1
+                  [False,    0,   1],     # psi2
+                  [False,    0,   1],     # psi3
+                  [False,    NA,   1],      # psi4
+                  [True,   NA,   NA],       # u
+                  [True,   NA,   NA],       # v (not in use)
+                  # This is the betas param
+                  [False,    NA,   NA],     # beta0
+                  [False,    NA,   NA],     # beta.R
+                  [False,    NA,   NA],     # beta.E
+                  [False,    NA,   NA]     # beta.W
+                 ]
+
+  num_waves:  5
+  population: 20215751
+  rho: 1/2.1
+  serial_mean: 1.386294
+  serial_var: 0.3226017
+  fit.t.pred: 52 #747 #672 #940
+  waves_list: [[18, 73], [256, 459], [504, 589], [659, 701], [772, 948]]
+  curve_params: [1, 0.93, 25, 0.85, 1] #[1.3, 0.85, 5.5, 0.85, 1]
+  vt_params: [1.26, 0.27, 0.41, 0.38]
+
+  ## Psi params
+  restriction_levels: [0.78, 0.78, 0.42,  -0.9, 300, 300] #[0.47, 0.42, 0.42,  -0.9, 300, 300] # For rt.func= 1,4,6,7
+
+  ## betas: beta0, .R, .E, .W
+  betas: NULL #[1, 0.009942, 0.0012,  -0.009]
+
+  ## Restrictions
+  restrictions_params: [0,3,2,1,2,1,0]
+  restriction_st_params: [1,22,100,214,266,348,472] # restriction starts
+
