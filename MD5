@@ -1,8 +1,9 @@
-5eeab009739343dbd99cb2d1e100af20 *DESCRIPTION
+abed4c0894549ef1a76d0e017bf9edaf *DESCRIPTION
 0c79430589fc8375fa283c0b2a700212 *NAMESPACE
-e778b86e78e9398f7e47cb8162af93d8 *R/executions.v16.R
-2b4ed4b7ebb4197bc64f93029ce1cc9f *R/prediction_model.v16.R
-ace2b074ff852bd1b8d6aaf095fa1984 *inst/config.yml
+d5250f0fb36b9e6ebae443b4f0c0e56b *R/executions.v16.R
+785cf5bf797e44ee883c3c222c492f88 *R/prediction_model.v16.R
+b943a1546a1e17be4eea235ec7b4616b *build/partial.rdb
+23237b0d64f8071f963fbed5cbbe7ae5 *inst/config.yml
 3280b6d9de50b546717c20bb93a3bd47 *inst/extdata/NY_OCT_4_2022.csv
 07601b5a14538a8542eabc6bcf863607 *man/c_helper.Rd
 2954881c32139660e1f2ba43651a1d00 *man/ci.curve.Rd
@@ -14,7 +15,7 @@ ace2b074ff852bd1b8d6aaf095fa1984 *inst/config.yml
 4277b6b452c4ee5e7bf151b118b4a78a *man/modif.helper.Rd
 b8d3f8315181bc4596ab6485637fd84b *man/navigate_to_config.Rd
 01b6259a012f0a4165489fb9e9a4680f *man/plot_outputs.Rd
-3477bcd035d8c1fc2ab8aa692e381812 *man/pred.curve.Rd
+89ffec2ecac4ae40b860446ec7f6175b *man/pred.curve.Rd
 07a4f0fb02de208a907cded1e3ad6e3d *man/ranges_to_waves.Rd
 02a4eb334b0d2fdca285d960a801fe34 *man/re_predict.Rd
 779993d869916312b0f76a7a2a197426 *man/rt_empirical.Rd

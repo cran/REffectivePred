@@ -113,10 +113,10 @@ Returns list:
 Computes the epidemic curve and associated quantities for a given parameter set.
 }
 \details{
-At each time step, \eqn{R_{t+1}} is computed using the contact rate function \eqn{c(S_t)} implemented via \link{c_helper}. Then the number of cases is computed using formula:
-    \deqn{y_{t+1}=R_{t+1} \sum_{s=1}^M w_s y_{t+1-s}}
-    Finally, the fraction \eqn{S_{t+1}} is updated. This creates a curve over the entire range of \code{ranges}. See Romanescu R, Hu S, Nanton D, Torabi M, Tremblay-Savard O, Haque MA. \href{https://www.sciencedirect.com/science/article/pii/S1755436523000440}{The effective reproductive number:
-    modeling and prediction with application to the multi-wave Covid-19 pandemic.} Epidemics. 2023 Jul 20:100708 for more details.
+At each time step, \eqn{R_{t}} is computed using the contact rate function \eqn{c(S_t)} implemented via \link{c_helper}. Then the number of cases is estimated using formula:
+    \deqn{y_{t+1}=R_{t} \sum_{s=1}^M w_s y_{t+1-s}}
+    Finally, the fraction \eqn{S_{t+1}} is updated. This creates a curve over the entire range of \code{ranges}. See Romanescu R, Hu S, Nanton D, Torabi M, Tremblay-Savard O, Haque MA. The effective reproductive number:
+    modeling and prediction with application to the multi-wave Covid-19 pandemic. Epidemics. 2023 Jul 20:100708 \doi{10.1016/j.epidem.2023.100708} for more details.
 
     For predicting an ongoing wave beyond the end of cases, the end of \code{ranges} (or \code{waves_list}, if using \code{cfg})
     should be specified to match the \code{predict.beyond} argument. As well, argument \code{use.actual.not.predicted} should be set to FALSE when predicting beyond the end of \code{cases}.

@@ -268,7 +268,6 @@ log_lklh <- function(param,
 
     # Uses normal distribution for yt
 
-    # To do: Problem 1: figure out which one you should use: yt.pr = rt[t-1]*lambdat[t-1], or rt*lambdat[t]
     fit <- fit - sum(dnorm(
       x = yt[curr.w.r],
       mean = yt.pr[curr.w.r],
@@ -486,7 +485,6 @@ estimate.mle <- function(hessian = FALSE,
     ranges <- ranges[1:(which(ranges > fit.t.pred)[1] - 1)]
   }
 
-  # RR
   op <- optim(
     par = ini_params,
     fn = log_lklh,
@@ -539,7 +537,7 @@ estimate.mle <- function(hessian = FALSE,
     "a3" = a3,
     "a4" = a4,
     "nu" = nu,
-    "vt_params_est" = vt_params_est, # RR Jun 17
+    "vt_params_est" = vt_params_est,
     "Psi" = psi,
     "betas" = betas,
     "negative_log_lik" = op$value,
@@ -660,10 +658,10 @@ estimate.mle <- function(hessian = FALSE,
 #' @param lt The length of cases.
 #' @param window_size The maximum value for the serial interval.
 #' @param verbose Logical. If TRUE, provides additional details while running the function.
-#' @details At each time step, \eqn{R_{t+1}} is computed using the contact rate function \eqn{c(S_t)} implemented via \link{c_helper}. Then the number of cases is computed using formula:
-#'     \deqn{y_{t+1}=R_{t+1} \sum_{s=1}^M w_s y_{t+1-s}}
-#'     Finally, the fraction \eqn{S_{t+1}} is updated. This creates a curve over the entire range of \code{ranges}. See Romanescu R, Hu S, Nanton D, Torabi M, Tremblay-Savard O, Haque MA. \href{https://www.sciencedirect.com/science/article/pii/S1755436523000440}{The effective reproductive number:
-#'     modeling and prediction with application to the multi-wave Covid-19 pandemic.} Epidemics. 2023 Jul 20:100708 for more details.
+#' @details At each time step, \eqn{R_{t}} is computed using the contact rate function \eqn{c(S_t)} implemented via \link{c_helper}. Then the number of cases is estimated using formula:
+#'     \deqn{y_{t+1}=R_{t} \sum_{s=1}^M w_s y_{t+1-s}}
+#'     Finally, the fraction \eqn{S_{t+1}} is updated. This creates a curve over the entire range of \code{ranges}. See Romanescu R, Hu S, Nanton D, Torabi M, Tremblay-Savard O, Haque MA. The effective reproductive number:
+#'     modeling and prediction with application to the multi-wave Covid-19 pandemic. Epidemics. 2023 Jul 20:100708 \doi{10.1016/j.epidem.2023.100708} for more details.
 #'
 #'     For predicting an ongoing wave beyond the end of cases, the end of \code{ranges} (or \code{waves_list}, if using \code{cfg})
 #'     should be specified to match the \code{predict.beyond} argument. As well, argument \code{use.actual.not.predicted} should be set to FALSE when predicting beyond the end of \code{cases}.
@@ -882,30 +880,7 @@ pred.curve <- function(a1 = 0,
 
       if (!is.na(betas[1])) {
         #     solve for psi_t
-        if (i <= 4 && tw >= -1000) {
-          if (tw == curr.w.r[1]) {
-            psi.vec[tw - 1] <- beta0 # i.e. starting value is 1 (or beta0)
-          }
-          # analytic soln, linearized
-          psi0 <- (beta0 + (1 / a1 - a2) * exp(a1 * a2)) / (1 + beta.R + beta.E * H.E[tw] + beta.W * H.W[tw] - exp(a1 * a2))
-
-          Mt <- beta.R + 1 * (beta.E * H.E[tw] + beta.W * H.W[tw]) # Note: this is slightly different from Mt on derivation sheet
-          delta.Mt <- 1 * (beta.E * (H.E[tw] - H.E[tw - 1]) + beta.W * (H.W[tw] - H.W[tw - 1]))
-          denom <- (c_helper(
-            rt_func = rt_func,
-            st.inner = 1,
-            a1 = a1, a2 = a2, a3 = a3, a4 = a4,
-            psi = psi.vec[tw - 1]
-          ) - Mt)
-          if (abs(denom) < 0.001) {
-            denom <- sign(denom) * 0.001
-          }
-          delta.psi.vec[tw] <- psi.vec[tw - 1] * delta.Mt / denom # max(denom, 0.001)
-          psi.vec[tw] <- min(1.20, psi.vec[tw - 1] + delta.psi.vec[tw])
-        }
-
-        # To do: will need a solver here (sirs = FALSE), and another after if cond on line 451 for (sirs = TRUE).
-        # Alternatively, code everything in a different way so that this is done once only (maybe).
+        # This is a stub
       } # ***************************** End module
 
 
@@ -957,7 +932,7 @@ pred.curve <- function(a1 = 0,
           yt.pr[tw + 1] <- infections[tw + 1]
         }
 
-        st.pr[tw + 1] <- st.pr[tw] - yt.pr[tw + 1] / (population * 1) # Problem: same as above.
+        st.pr[tw + 1] <- st.pr[tw] - yt.pr[tw + 1] / (population * 1)
       }
     } # End loop on tw
 
@@ -965,7 +940,7 @@ pred.curve <- function(a1 = 0,
     missing.rt <- which(is.na(rt.pr))
     missing.rt <- missing.rt[missing.rt < lt]
     rt.pr[missing.rt] <-
-      yt.pr[missing.rt + 1] / lambda.t.pr[missing.rt] # Note: this is off by one. Once you fix index tw-1 --> tw, you may not even need these lines.
+      yt.pr[missing.rt + 1] / lambda.t.pr[missing.rt]
   }
 
   output <- list(
@@ -1557,8 +1532,7 @@ plot_outputs <- function(curve = NULL,
     Time <- c(Time, Time[length(Time)] + (1:predict.beyond))
   }
 
-  waves = ranges_to_waves(waves_list)
-  waves = waves_1d_list(num_waves, waves)
+  waves = waves_1d_list(num_waves, waves_list)
 
   # Plot predicted Rt (lines) on top of empirical Rt (points);
   if (is.null(rt.max)){   rt.max = max(rt.empirical, na.rm = TRUE)  }

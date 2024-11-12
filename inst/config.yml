@@ -36,13 +36,13 @@ default:
   rho: 1/2.1
   serial_mean: 1.386294
   serial_var: 0.3226017
-  fit.t.pred: 52 #747 #672 #940
+  fit.t.pred: 52
   waves_list: [[18, 73], [256, 459], [504, 589], [659, 701], [772, 948]]
-  curve_params: [1, 0.93, 25, 0.85, 1] #[1.3, 0.85, 5.5, 0.85, 1]
+  curve_params: [1, 0.93, 25, 0.85, 1]
   vt_params: [1.26, 0.27, 0.41, 0.38]
 
   ## Psi params
-  restriction_levels: [0.78, 0.78, 0.42,  -0.9, 300, 300] #[0.47, 0.42, 0.42,  -0.9, 300, 300] # For rt.func= 1,4,6,7
+  restriction_levels: [0.78, 0.78, 0.42,  -0.9, 300, 300]
 
   ## betas: beta0, .R, .E, .W
   betas: NULL #[1, 0.009942, 0.0012,  -0.009]

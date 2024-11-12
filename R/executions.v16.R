@@ -14,7 +14,8 @@ NULL
 #' @export
 navigate_to_config <- function() {
   path_to_config <- system.file("config.yml", package = "REffectivePred")
-  system(path_to_config)
+  system(paste("open",path_to_config))
+  print(path_to_config)
   output <- path_to_config
 }
 
@@ -96,116 +97,119 @@ re_predict <- function(path_to_data = NULL) {
   infections <- cases / rho # Estimated time series of total infections
 
   # ==============================================================================
+  print("================================================")
+  print(waves)
+  est <- estimate.mle(
+    ini_params = ini_params,
+    params_limits = params_limits,
+    restrictions = restrictions_params,
+    restriction.starts = restriction_st_params,
+    ranges = waves,
+    rt_func = rt.func.num,
+    silence.errors = silence.errors,
+    fit.t.pred = fit.t.pred,
+    param_scale = param_scale,
+    num.iter = num.iter,
+    cases = cases,
+    scenario = NULL,
+    H.E = NULL,
+    H.W = NULL,
+    adj.period = adj.period,
+    population = population,
+    rho = rho,
+    serial_mean = serial_mean,
+    serial_var = serial_var,
+    lt = lt,
+    window_size = window_size,
+    hessian = T
+  )
 
-    est <- estimate.mle(
-      ini_params = ini_params,
-      params_limits = params_limits,
-      restrictions = restrictions_params,
-      restriction.starts = restriction_st_params,
-      ranges = waves,
-      rt_func = rt.func.num,
-      silence.errors = silence.errors,
-      fit.t.pred = fit.t.pred,
-      param_scale = param_scale,
-      num.iter = num.iter,
-      cases = cases,
-      scenario = NULL,
-      H.E = NULL,
-      H.W = NULL,
-      adj.period = adj.period,
-      population = population,
-      rho = rho,
-      serial_mean = serial_mean,
-      serial_var = serial_var,
-      lt = lt,
-      window_size = window_size,
-      hessian = T
-    )
+  print(est)
 
-    print(est)
-
-    a1 <- est$a1
-    a2 <- est$a2
-    a3 <- est$a3
-    a4 <- est$a4
-    nu <- est$nu
-    vt <- c(1, est$vt_params_est)
-    psi <- est$Psi
-    betas <- est$betas
+  a1 <- est$a1
+  a2 <- est$a2
+  a3 <- est$a3
+  a4 <- est$a4
+  nu <- est$nu
+  vt <- c(1, est$vt_params_est)
+  psi <- est$Psi
+  betas <- est$betas
 
 
-    # Result & Plot: Predictions are based on the function below
+  # Result & Plot: Predictions are based on the function below
+  print("------------------------------------------------")
+  print(waves)
+  r1 <- pred.curve(
+    a1 = a1,
+    a2 = a2,
+    a3 = a3,
+    a4 = a4,
+    nu = nu,
+    Psi = psi,
+    betas = betas,
+    use.actual.not.predicted = not.predict,
+    restrictions = restrictions_params,
+    restriction.starts = restriction_st_params,
+    ranges = waves,
+    variant.transm = vt,
+    rt_func = rt.func.num,
+    fit.t.pred = fit.t.pred,
+    cases = cases,
+    scenario = NULL,
+    H.E = NULL,
+    H.W = NULL,
+    adj.period = adj.period,
+    population = population,
+    rho = rho,
+    serial_mean = serial_mean,
+    serial_var = serial_var,
+    lt = lt,
+    window_size = window_size
+  )
 
-    r1 <- pred.curve(
-      a1 = a1,
-      a2 = a2,
-      a3 = a3,
-      a4 = a4,
-      nu = nu,
-      Psi = psi,
-      betas = betas,
-      use.actual.not.predicted = not.predict,
-      restrictions = restrictions_params,
-      restriction.starts = restriction_st_params,
-      ranges = waves,
-      variant.transm = vt,
-      rt_func = rt.func.num,
-      fit.t.pred = fit.t.pred,
-      cases = cases,
-      scenario = NULL,
-      H.E = NULL,
-      H.W = NULL,
-      adj.period = adj.period,
-      population = population,
-      rho = rho,
-      serial_mean = serial_mean,
-      serial_var = serial_var,
-      lt = lt,
-      window_size = window_size
-    )
+  print(r1)
+  Rt.pr <- r1$`Predicted Rt` # Predicted Rt
+  yt.pr1 <- abs(r1$`Predicted Infections`)
 
-    print(r1)
-    Rt.pr <- r1$`Predicted Rt` # Predicted Rt
-    yt.pr1 <- abs(r1$`Predicted Infections`)
+  # Rt
+  range.rt <- 1:length(lt)
 
-    # Rt
-    range.rt <- 1:length(lt)
+  ### Plot for each Rt (1:4)
+  range.points <- 1:(max(waves_list[[4]]) + 21) # Decide the range of points to plot
 
-    ### Plot for each Rt (1:4)
-    range.points <- 1:(max(waves_list[[4]]) + 21) # Decide the range of points to plot
+  # Rt
+  plot_outputs(curve = r1,
+               Time = Time,
+               cases = cases,
 
-    # Rt
-    plot_outputs(Time = Time,
-                 cases = cases,
-                 window_size = window_size,
-                 serial_mean = serial_mean,
-                 serial_var = serial_var,
-                 predict.beyond = predict.beyond,
-                 waves_list = waves_list,
-                 num_waves = num_waves,
-                 rt_func = rt.func.num,
-                 curve = r1,
-                 restrictions = restrictions_params,
-                 restriction.starts = restriction_st_params
-    )
+               window_size = window_size,
+               serial_mean = serial_mean,
+               serial_var = serial_var,
+               predict.beyond = predict.beyond,
+               waves_list = waves_list,
+               num_waves = num_waves,
+               rt_func = rt.func.num,
+               restrictions = restrictions_params,
+               restriction.starts = restriction_st_params
+  )
 
-    # Confidence bounds
-    bounds <- ci.curve(fit = est,
-                       restrictions = restrictions_params,
-                       restriction.starts = restriction_st_params,
-                       ranges = waves,
-                       rt_func = rt.func.num,
-                       fit.t.pred = fit.t.pred,
-                       cases = cases,
-                       scenario = NULL,
-                       H.E = NULL,
-                       H.W = NULL,
-                       adj.period = adj.period,
-                       population = population,
-                       rho = rho,
-                       serial_mean = serial_mean,
-                       serial_var = serial_var,
-                       lt = lt,
-                       window_size = window_size)
-    print(bounds)
+  # Confidence bounds
+  bounds <- ci.curve(fit = est,
+                     restrictions = restrictions_params,
+                     restriction.starts = restriction_st_params,
+                     ranges = waves,
+                     rt_func = rt.func.num,
+                     fit.t.pred = fit.t.pred,
+                     cases = cases,
+                     scenario = NULL,
+                     H.E = NULL,
+                     H.W = NULL,
+                     adj.period = adj.period,
+                     population = population,
+                     rho = rho,
+                     serial_mean = serial_mean,
+                     serial_var = serial_var,
+                     lt = lt,
+                     window_size = window_size)
+  print(bounds)
 }
